@@ -43,8 +43,12 @@ def change_password(request):
 def mobile(request, data=None):
  if data == None:
   mobiles = Product.objects.filter(category='M')
- elif data == 'Apple' or data == 'Samsung':
+ elif data == 'Apple' or data == 'Samsung' or data == 'Nokia':
   mobiles = Product.objects.filter(category='M').filter(brand=data)
+ elif data == 'Below':
+  mobiles = Product.objects.filter(category='M').filter(discounted_price__lt=10000)
+ elif data == 'Above':
+  mobiles = Product.objects.filter(category='M').filter(discounted_price__gt=10000)
 
  return render(request, 'app/mobile.html', {'mobiles':mobiles})
 

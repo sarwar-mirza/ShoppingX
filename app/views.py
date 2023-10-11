@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views import View
 from .models import Customer, Cart, Product, OrderPlaced
 from .forms import CustomerRegistrationForm
+from django.contrib import messages
 
 
 class ProductHomeView(View):
@@ -68,6 +69,7 @@ class CustomerRegistrationView(View):
  def post(self, request):
   fm = CustomerRegistrationForm(request.POST)
   if fm.is_valid():
+   messages.success(request, 'Congratulations Your registration successfully done !!!')
    fm.save()
   return render (request, 'app/customerregistration.html', {'form':fm})
 

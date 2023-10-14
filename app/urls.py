@@ -4,7 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from django.contrib.auth import views as auth_view
-from .forms import LoginForm, UserPasswordChangeForm, UserPassworResetForm
+from .forms import LoginForm, UserPasswordChangeForm, UserPassworResetForm, UserSetPasswordConfirm
 
 
 urlpatterns = [
@@ -33,6 +33,9 @@ urlpatterns = [
 
 
     path('password-reset/', auth_view.PasswordResetView.as_view(template_name = 'app/password_reset.html', form_class=UserPassworResetForm), name='password_reset'),
+    path('password-reset/done/', auth_view.PasswordResetDoneView.as_view(template_name = 'app/password_reset_done.html'), name='password_reset_done'),
+    path('password-reset-confirm/<uidb64>/<token>/', auth_view.PasswordResetConfirmView.as_view(template_name = 'app/password_reset_confirm.html', form_class=UserSetPasswordConfirm, success_url='/password-reset-complete/'), name='password_reset_confirm'),
+    path('password-reset-complete/', auth_view.PasswordResetCompleteView.as_view(template_name = 'app/password_reset_complete.html'), name='password_reset_conmplete'),
 
     path('registration/', views.CustomerRegistrationView.as_view(), name='customerregistration'),
     

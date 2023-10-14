@@ -128,3 +128,6 @@ MEDIA_URL = '/media/'     # image save folder
 MEDIA_ROOT = BASE_DIR / 'media'
 
 LOGIN_REDIRECT_URL = '/profile/'
+
+# reset password console link
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

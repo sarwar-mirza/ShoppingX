@@ -19,7 +19,8 @@ urlpatterns = [
 
 
     path('profile/', views.ProfileViewCustomer.as_view(), name='profile'),
-    path('address/', views.address, name='address'),
+
+    path('address/', views.AddressView.as_view(), name='address'),
 
 
     path('orders/', views.orders, name='orders'),

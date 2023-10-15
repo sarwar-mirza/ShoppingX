@@ -50,8 +50,13 @@ class ProfileViewCustomer(View):
    messages.success(request, 'Congratulations !! Profile Updated Successfully. ')
   return render(request, 'app/profile.html', {'form':fm, 'active':'btn-primary'})
 
-def address(request):
- return render(request, 'app/address.html')
+
+class AddressView(View):
+ def get(self, request):
+  add = Customer.objects.filter(user=request.user)
+  return render(request, 'app/address.html', {'address':add, 'active':'btn-primary'})
+
+
 
 def orders(request):
  return render(request, 'app/orders.html')

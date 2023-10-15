@@ -4,6 +4,9 @@ from .models import Customer, Cart, Product, OrderPlaced
 from .forms import CustomerRegistrationForm, ProfileCustomerForm
 from django.contrib import messages
 
+from django.db.models import Q
+from django.http import JsonResponse
+
 
 class ProductHomeView(View):
  def get(self, request):
@@ -54,7 +57,84 @@ def show_cart(request):
    return render(request, 'app/emptycart.html')
    
 
+# Quantity plus, minus, remove
+
+def plus_cart(request):                     # Plus Quantity
+ if request.method == 'GET':
+    prod_id = request.GET['prod_id']
+    c = Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
+    c.quantity+=1
+    c.save()
+
+    amount = 0.0
+    shipping_amount = 70.0
+    cart_product = [p for p in Cart.objects.all() if p.user == request.user]
+
+    for p in cart_product:
+      tempamount = (p.quantity * p.product.discounted_price)
+      amount += tempamount
+      #totalamount = amount + shipping_amount
+
+    data = {
+      'quantity': c.quantity,
+      'amount': amount,
+      'totalamount': amount + shipping_amount
+    }
+
+    return JsonResponse(data)
  
+
+def minus_cart(request):                                      # minus Quantity
+ if request.method == 'GET':
+    prod_id = request.GET['prod_id']
+    c = Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
+    c.quantity -= 1
+    c.save()
+
+    amount = 0.0
+    shipping_amount = 70.0
+    cart_product = [p for p in Cart.objects.all() if p.user == request.user]
+
+    for p in cart_product:
+      tempamount = (p.quantity * p.product.discounted_price)
+      amount += tempamount
+      
+
+    data = {
+      'quantity': c.quantity,
+      'amount': amount,
+      'totalamount': amount + shipping_amount
+    }
+
+    return JsonResponse(data)
+ 
+
+
+def remove_cart(request):                     # Remove Quantity
+ if request.method == 'GET':
+    prod_id = request.GET['prod_id']
+    c = Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
+    
+    c.delete()
+
+    amount = 0.0
+    shipping_amount = 70.0
+    cart_product = [p for p in Cart.objects.all() if p.user == request.user]
+
+    for p in cart_product:
+      tempamount = (p.quantity * p.product.discounted_price)
+      amount += tempamount
+      
+
+    data = {
+      'amount': amount,
+      'totalamount': amount + shipping_amount
+    }
+
+    return JsonResponse(data)
+ 
+    
+
 
 
 

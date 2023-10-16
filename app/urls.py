@@ -31,7 +31,9 @@ urlpatterns = [
     path('address/', views.AddressView.as_view(), name='address'),
 
 
+
     path('orders/', views.orders, name='orders'),
+
 
     path('mobile/', views.mobile, name='mobile'),
     path('mobile/<slug:data>', views.mobile, name='mobiledata'),

@@ -131,3 +131,6 @@ LOGIN_REDIRECT_URL = '/profile/'
 
 # reset password console link
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Session 
+SESSION_ENGINE = "django.contrib.sessions.backends.db"

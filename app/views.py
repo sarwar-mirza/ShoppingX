@@ -7,6 +7,9 @@ from django.contrib import messages
 from django.db.models import Q
 from django.http import JsonResponse
 
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+
 
 class ProductHomeView(View):
  def get(self, request):
@@ -25,6 +28,7 @@ class ProductDetailView(View):
   return render(request, 'app/productdetail.html', {'product':product})
 
 
+@login_required
 
 def add_to_cart(request):
  user = request.user
@@ -36,7 +40,7 @@ def add_to_cart(request):
  return redirect('/cart')
 
 
-
+@login_required
 def show_cart(request):
  if request.user.is_authenticated:
   user = request.user
@@ -141,6 +145,8 @@ def remove_cart(request):                     # Remove Quantity
 def buy_now(request):
  return render(request, 'app/buynow.html')
 
+
+@method_decorator(login_required, name='dispatch')
 class ProfileViewCustomer(View):
  def get(self, request):
   fm = ProfileCustomerForm()
@@ -162,17 +168,18 @@ class ProfileViewCustomer(View):
    messages.success(request, 'Congratulations !! Profile Updated Successfully. ')
   return render(request, 'app/profile.html', {'form':fm, 'active':'btn-primary'})
 
-
+@method_decorator(login_required, name='dispatch')
 class AddressView(View):
  def get(self, request):
   add = Customer.objects.filter(user=request.user)
   return render(request, 'app/address.html', {'address':add, 'active':'btn-primary'})
 
 
-
+@login_required
 def orders(request):
  op = OrderPlaced.objects.filter(user=request.user)
  return render(request, 'app/orders.html', {'order_placed':op})
+
 
 
 def mobile(request, data=None):
@@ -227,7 +234,7 @@ def checkout(request):
  return render(request, 'app/checkout.html', {'add':add, 'totalamount':totalamount, 'cart_items': cart_items})
 
 
-
+@login_required
 def payment_done(request):
  user = request.user
  custid = request.GET.get('custid')

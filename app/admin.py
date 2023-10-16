@@ -25,12 +25,12 @@ class OrderPlacedModelAdmin(admin.ModelAdmin):
 
 
     def customer_info(self, obj):
-        link = reverse("admin:app_customer_change", args=[obj.customer.pk])
+        link = reverse("admin:app_customer_change", args=[obj.customer.pk])     # Customer Model
 
         return format_html('<a href="{}">{}</a>', link, obj.customer.name)
     
     
     def product_info(self, obj):
-        link = reverse("admin:app_product_change", args=[obj.product.pk])
+        link = reverse("admin:app_product_change", args=[obj.product.pk])       # Product Model
 
         return format_html('<a href="{}">{}</a>', link, obj.product.title)

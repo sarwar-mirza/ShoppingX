@@ -13,17 +13,22 @@ from django.utils.decorators import method_decorator
 
 class ProductHomeView(View):
  def get(self, request):
+  totalitem = 0
   topwears = Product.objects.filter(category='TW')
   bottomwears = Product.objects.filter(category='BW')
   mobiles = Product.objects.filter(category='M')
 
-  context = {'topwears': topwears, 'bottomwears':bottomwears, 'mobiles':mobiles}
+  if request.user.is_authenticated:
+   totalitem = len(Cart.objects.filter(user=request.user))
+
+  context = {'topwears': topwears, 'bottomwears':bottomwears, 'mobiles':mobiles, 'totalitem':totalitem}
   return render(request, 'app/home.html', context)
 
 
 
 class ProductDetailView(View):
  def get(self, request, pk):
+  totalitem = 0
   product = Product.objects.get(pk=pk)
 
   item_already_in_cart = False      # same product select user
@@ -31,7 +36,12 @@ class ProductDetailView(View):
   if request.user.is_authenticated:
    item_already_in_cart = Cart.objects.filter(Q(product=product.id) & Q(user=request.user)).exists()
 
-  return render(request, 'app/productdetail.html', {'product':product, 'item_already_in_cart':item_already_in_cart})
+
+  if request.user.is_authenticated:
+   totalitem = len(Cart.objects.filter(user=request.user))
+
+
+  return render(request, 'app/productdetail.html', {'product':product, 'item_already_in_cart':item_already_in_cart, 'totalitem':totalitem})
 
 
 
@@ -49,6 +59,11 @@ def add_to_cart(request):
 
 @login_required
 def show_cart(request):
+ totalitem = 0
+ if request.user.is_authenticated:
+   totalitem = len(Cart.objects.filter(user=request.user))
+  
+
  if request.user.is_authenticated:
   user = request.user
   cart = Cart.objects.filter(user=user)
@@ -63,9 +78,9 @@ def show_cart(request):
     tempamount = (p.quantity  *  p.product.discounted_price)
     amount += tempamount
     totalamount = amount + shipping_amount
-   return render(request, 'app/addtocart.html', {'carts':cart, 'totalamount':totalamount, 'amount':amount})
+   return render(request, 'app/addtocart.html', {'carts':cart, 'totalamount':totalamount, 'amount':amount, 'totalitem':totalitem})
   else:
-   return render(request, 'app/emptycart.html')
+   return render(request, 'app/emptycart.html', {'totalitem':totalitem})
    
 
 # Quantity plus, minus, remove
@@ -155,11 +170,18 @@ def buy_now(request):
 
 @method_decorator(login_required, name='dispatch')
 class ProfileViewCustomer(View):
+ totalitem = 0
+ 
  def get(self, request):
   fm = ProfileCustomerForm()
-  return render(request, 'app/profile.html', {'form':fm, 'active':'btn-primary'})
+
+  if request.user.is_authenticated:
+   totalitem = len(Cart.objects.filter(user=request.user))
+
+  return render(request, 'app/profile.html', {'form':fm, 'active':'btn-primary', 'totalitem':totalitem})
  
  def post(self, request):
+  totalitem = 0
   fm = ProfileCustomerForm(request.POST)
 
   if fm.is_valid():
@@ -173,13 +195,24 @@ class ProfileViewCustomer(View):
    reg = Customer( user= usr, name=name, locality= locality, city=city, state=state, zipcode=zipcode)
    reg.save()
    messages.success(request, 'Congratulations !! Profile Updated Successfully. ')
-  return render(request, 'app/profile.html', {'form':fm, 'active':'btn-primary'})
+
+  if request.user.is_authenticated:
+   totalitem = len(Cart.objects.filter(user=request.user))
+
+
+  return render(request, 'app/profile.html', {'form':fm, 'active':'btn-primary', 'totalitem':totalitem})
 
 @method_decorator(login_required, name='dispatch')
 class AddressView(View):
  def get(self, request):
+  totalitem = 0
   add = Customer.objects.filter(user=request.user)
-  return render(request, 'app/address.html', {'address':add, 'active':'btn-primary'})
+
+  if request.user.is_authenticated:
+   totalitem = len(Cart.objects.filter(user=request.user))
+
+
+  return render(request, 'app/address.html', {'address':add, 'active':'btn-primary', 'totalitem':totalitem})
 
 
 @login_required
@@ -223,6 +256,7 @@ class CustomerRegistrationView(View):
 
 @login_required
 def checkout(request):
+ totalitem = 0
  user = request.user
  add = Customer.objects.filter(user=user)
  cart_items = Cart.objects.filter(user=user)
@@ -238,7 +272,12 @@ def checkout(request):
    tempamount = (p.quantity * p.product.discounted_price)
    amount += tempamount
   totalamount = amount + shipping_amount
- return render(request, 'app/checkout.html', {'add':add, 'totalamount':totalamount, 'cart_items': cart_items})
+
+ if request.user.is_authenticated:
+   totalitem = len(Cart.objects.filter(user=request.user))
+
+
+ return render(request, 'app/checkout.html', {'add':add, 'totalamount':totalamount, 'cart_items': cart_items, 'totalitem':totalitem})
 
 
 @login_required

@@ -227,4 +227,14 @@ def checkout(request):
 
 
 
+def payment_done(request):
+ user = request.user
+ custid = request.GET.get('custid')
+ customer = Customer.objects.get(id=custid)
+ cart_items = Cart.objects.filter(user=user)
+
+ for c in cart_items:
+  OrderPlaced(user=user, customer=customer, product=c.product, quantity=c.quantity).save()
+  c.delete()
+ return redirect("orders")
 

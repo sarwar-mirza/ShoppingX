@@ -27,7 +27,9 @@ class ProductDetailView(View):
   product = Product.objects.get(pk=pk)
 
   item_already_in_cart = False      # same product select user
-  item_already_in_cart = Cart.objects.filter(Q(product=product.id) & Q(user=request.user)).exists()
+  
+  if request.user.is_authenticated:
+   item_already_in_cart = Cart.objects.filter(Q(product=product.id) & Q(user=request.user)).exists()
 
   return render(request, 'app/productdetail.html', {'product':product, 'item_already_in_cart':item_already_in_cart})
 
@@ -219,7 +221,7 @@ class CustomerRegistrationView(View):
   return render (request, 'app/customerregistration.html', {'form':fm})
 
 
-
+@login_required
 def checkout(request):
  user = request.user
  add = Customer.objects.filter(user=user)
